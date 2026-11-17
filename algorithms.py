@@ -16,3 +16,8 @@ def _non_preemptive(tasks, key):
 
 def fifo(tasks):
     return _non_preemptive(tasks, key=lambda t: t["arrival"])
+
+
+ALGORITHMS = {
+    "FIFO": fifo,
+}
