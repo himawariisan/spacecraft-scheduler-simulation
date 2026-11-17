@@ -1,4 +1,6 @@
 # Алгоритми планування
+from collections import deque
+from data import QUANTUM
 
 def _non_preemptive(tasks, key):
     time, remaining, finish = 0, list(tasks), {}
@@ -40,9 +42,39 @@ def priority_preemptive(tasks):
     return finish
 
 
+def round_robin(tasks, quantum=QUANTUM):
+    tasks = sorted(tasks, key=lambda t: t["arrival"])
+    time, finish, queue, i = 0, {}, deque(), 0
+    left = {t["name"]: t["burst"] for t in tasks}
+
+    def add_arrived():
+        nonlocal i
+        while i < len(tasks) and tasks[i]["arrival"] <= time:
+            queue.append(tasks[i])
+            i += 1
+
+    add_arrived()
+    while queue or i < len(tasks):
+        if not queue:                       # простій до наступної задачі
+            time = tasks[i]["arrival"]
+            add_arrived()
+            continue
+        t = queue.popleft()
+        run = min(quantum, left[t["name"]])
+        time += run
+        left[t["name"]] -= run
+        add_arrived()                       # нові задачі стають у чергу раніше
+        if left[t["name"]] > 0:
+            queue.append(t)
+        else:
+            finish[t["name"]] = time
+    return finish
+
+
 ALGORITHMS = {
     "FIFO": fifo,
     "SJF": sjf,
+    f"Round Robin (q={QUANTUM})": round_robin,
     "Priority": priority,
     "Priority (з витісненням)": priority_preemptive,
 }
