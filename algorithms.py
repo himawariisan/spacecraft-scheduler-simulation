@@ -19,7 +19,11 @@ def fifo(tasks):
 def sjf(tasks):
     return _non_preemptive(tasks, key=lambda t: (t["burst"], t["arrival"]))
 
+def priority(tasks):
+    return _non_preemptive(tasks, key=lambda t: (t["priority"], t["arrival"]))
+
 ALGORITHMS = {
     "FIFO": fifo,
     "SJF": sjf,
+    "Priority": priority,
 }
