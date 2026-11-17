@@ -13,11 +13,13 @@ def _non_preemptive(tasks, key):
         remaining.remove(t)
     return finish
 
-
 def fifo(tasks):
     return _non_preemptive(tasks, key=lambda t: t["arrival"])
 
+def sjf(tasks):
+    return _non_preemptive(tasks, key=lambda t: (t["burst"], t["arrival"]))
 
 ALGORITHMS = {
     "FIFO": fifo,
+    "SJF": sjf,
 }
